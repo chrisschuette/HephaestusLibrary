@@ -3,9 +3,20 @@ Hephaestus Library
 
 
 
+Examples.
+---------
+
+### SuperAsteroids ###
+<img src="http://chrisschuette.github.io/HephaestusLibrary/SuperAsteroid.png"></img>
+Some gameplay footage can be seen [here](https://vimeo.com/98917928)
+
+### Night & Day ###
+<img src="http://chrisschuette.github.io/HephaestusLibrary/NightAndDay.png"></img>
+Some gameplay footage can be seen [here](https://vimeo.com/98908413)
+
 Dependencies.
 -------------
-The following libraries are needed to successfully compile the project*
+The following libraries are needed to successfully compile the project
 * [libconfig](http://www.hyperrealm.com/libconfig/)
 * [OpenGL](http://www.opengl.org)
 * [GLEW](http://glew.sourceforge.net/)
