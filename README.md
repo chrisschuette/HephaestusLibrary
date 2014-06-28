@@ -1,4 +1,26 @@
-HephaestusLibrary
-=================
+Hephaestus Library
+==================
 
-sketches of a game engine - mostly reflections on object orientation and how to structure different components of the engine
+
+
+Dependencies.
+-------------
+The following libraries are needed to successfully compile the project*
+* [libconfig](http://www.hyperrealm.com/libconfig/)
+* [OpenGL](http://www.opengl.org)
+* [GLEW](http://glew.sourceforge.net/)
+* [GLFW](http://www.glfw.org/)
+* [FreeType](http://freetype.org/)
+* [Boost](http://www.boost.org/)
+* [DevIL](http://openil.sourceforge.net/)
+* [Box2D](http://box2d.org/)
+* [OpenAL](http://kcat.strangesoft.net/openal.html)
+* [VorbisFile](http://www.vorbis.com/)
+
+
+References.
+-----------
+Ideas from the following references contributed substantially to the development of the library
+
+* [Object-oriented Game Development, 	Julian Gold, Pearson Education, 2004](http://www.openisbn.com/isbn/9780321176608/)
+* [Game Programming Gems 5: Component Based Object Management, 	Bjarne Rene, 2005](http://www.openisbn.com/isbn/9781584503521/)
