@@ -1,0 +1,86 @@
+/* 
+ * File:   Component.h
+ * Author: chris
+ *
+ * Created on May 23, 2014, 7:16 PM
+ */
+
+#ifndef COMPONENT_H
+#define	COMPONENT_H
+
+#include "../MATH/vec234.h"
+#include "THEME/Theme.h"
+#include "EVENT/EventResponder.h"
+
+#include <string>
+
+namespace UI {
+    class Context;
+    class ComponentView;
+    class UI;
+    class Component: public EVENT::EventResponder {
+    public:
+        enum SIZE_BEHAVIOUR { EXPAND, COMPACT, FIXED};
+    public:
+        Component(std::string name);
+        virtual ~Component();
+        virtual void init(Context& context, bool force = false);
+        
+        // validity
+        bool isValid() const { return m_valid; }
+        void setValid(bool valid) { m_valid = valid; }
+        virtual void validate(Context& context);
+        virtual void invalidate();
+        
+        // visibility
+        bool isVisible() const { return m_visible; }
+        
+        // update & render
+        virtual void update() {};
+        virtual void render(Context& context) const;
+
+        // layout
+        virtual void resize(int x, int y);
+        void setMinimumSize(int x, int y);
+        void setMaximumSize(int x, int y);
+        void setSizeBehaviour(SIZE_BEHAVIOUR x, SIZE_BEHAVIOUR y);
+        void setPositionX(int x) { m_position.x = x; }
+        void setPositionY(int y) { m_position.y = y; }
+        
+        const MATH::ivec2& getDimensions() const { return m_dimensions; }
+        int getWidth() const { return m_dimensions.x; }
+        int getHeight() const { return m_dimensions.y; }
+        int getMinimumWidth() const {return m_minDimensions.x; }
+        int getMinimumHeight() const {return m_minDimensions.y; }
+        int getMaximumWidth() const {return m_maxDimensions.x; }
+        int getMaximumHeight() const {return m_maxDimensions.y; }
+        
+        unsigned int getVerticalBehaviour() const { return m_heightBehaviour; }
+        unsigned int getHorizontalBehaviour() const { return m_widthBehaviour; }
+        
+        // other
+        virtual void setUI(UI* ui) { m_UI = ui; } 
+        unsigned int getTypeID() const { return m_typeID; }
+        virtual Component* getComponent(const MATH::ivec2& position);
+        bool isInRect(const MATH::ivec2& point) const;
+        Component* getParent() const { return m_parent; }
+        void becomeFirstResponder();
+    protected:
+        Component* m_parent;
+        static void setParent( Component& component, Component* parent );
+        MATH::ivec2 m_position;
+        ComponentView* m_componentView;
+    private:
+        unsigned int m_typeID;
+        bool m_valid;
+        bool m_visible;
+        MATH::ivec2 m_dimensions;
+        MATH::ivec2 m_minDimensions;
+        MATH::ivec2 m_maxDimensions;
+        SIZE_BEHAVIOUR m_heightBehaviour;
+        SIZE_BEHAVIOUR m_widthBehaviour;
+        UI* m_UI;
+    };
+}
+#endif	/* COMPONENT_H */
+

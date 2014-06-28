@@ -1,0 +1,93 @@
+/* 
+ * File:   View.h
+ * Author: chris
+ *
+ * Created on May 23, 2014, 7:17 PM
+ */
+
+#ifndef VIEW_H
+#define	VIEW_H
+
+#include "Component.h"
+#include "LAYOUT/Layout.h"
+
+#include <list>
+
+namespace UI {
+    namespace LAYOUT {
+        class Layout;
+    }
+
+    class View : public Component {
+    public:
+        typedef std::list<Component *> tViewList;
+
+    public:
+        View(std::string name);
+        virtual ~View();
+
+        // component management
+        virtual void addComponent(Component* component);
+
+        const tViewList& getChildren() const {
+            return m_children;
+        }
+
+        tViewList& getChildren() {
+            return m_children;
+        }
+
+        bool hasChildren() const {
+            return m_children.size();
+        }
+
+        unsigned int getChildCount() const {
+            return m_children.size();
+        }
+
+        // render & update
+        virtual void render(Context& context) const;
+
+        //validity
+        virtual void validate(Context& context);
+
+        // layout
+
+        void setLayout(LAYOUT::Layout* layout) {
+            m_layout = layout;
+        }
+
+        // other
+        virtual void setUI(UI* ui);
+        virtual Component* getComponent(const MATH::ivec2& position);
+
+        int getContainerWidth() const {
+            return m_containerDimensions.x;
+        }
+
+        int getContainerHeight() const {
+            return m_containerDimensions.y;
+        }
+        
+        void setContainerWidth(int w) {
+            m_containerDimensions.x = w;
+        }
+
+        void setContainerHeight(int h) {
+            m_containerDimensions.y = h;
+        }
+        
+        void setContainerDimensions(const MATH::ivec2& dimensions) {
+            m_containerDimensions = dimensions;
+        }
+    protected:
+        tViewList m_children;
+    private:
+        LAYOUT::Layout* m_layout;
+        MATH::ivec2 m_containerDimensions;
+        MATH::ivec2 m_containerOrigin;
+    };
+}
+
+#endif	/* VIEW_H */
+

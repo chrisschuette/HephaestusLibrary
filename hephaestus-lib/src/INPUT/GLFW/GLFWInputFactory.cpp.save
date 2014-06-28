@@ -1,0 +1,96 @@
+/* 
+ * File:   GLFWInputFactory.cpp
+ * Author: chris
+ * 
+ * Created on May 26, 2014, 5:00 PM
+ */
+
+#include "GLFWInputFactory.h"
+#include "../../LOG/Core.h"
+#include "../InputManager.h"
+#include "../MouseInput.h"
+#include "../../UTIL/string.h"
+#include "../JoystickInput.h"
+
+//#define NAME "GLFWInputFactory"
+
+namespace INPUT {
+    namespace GLFW {
+
+        GLFWInputFactory::GLFWInputFactory()/* : INPUT::InputFactory() */{
+
+        }
+
+        GLFWInputFactory::~GLFWInputFactory() {
+        }
+
+        void GLFWInputFactory::init() {
+         /*   for (int j = 0; j < GLFWInputFactory_CONST::MAX_JOYSTICKS; j++) {
+                if (GL_TRUE == glfwJoystickPresent(j)) {
+                    const char* joy_name = glfwGetJoystickName(j);
+                    int nButtons;
+                    const unsigned char * buttonState = glfwGetJoystickButtons(j, &nButtons);
+                    int nAxes = 0;
+                    const float* axesState = glfwGetJoystickAxes(j, &nAxes);
+                    m_joystickStates[j] = new Joystick_State(joy_name, nButtons, nAxes);
+                    memcpy(m_joystickStates[j]->axesState, axesState, nAxes * sizeof (float));
+                    memcpy(m_joystickStates[j]->buttonState, buttonState, nButtons * sizeof (char));
+                    L(normal) << "Joystick " << j << ": " << joy_name << " " << nButtons << " buttons, " << nAxes << " axes.";
+                } else
+                    m_joystickStates[j] = 0;
+            }*/
+        }
+
+        void GLFWInputFactory::processEvents() {
+          /*  glfwPollEvents();
+
+            // check the joystick states
+            for (int j = 0; j < GLFWInputFactory_CONST::MAX_JOYSTICKS; j++) {
+                if (m_joystickStates[j]) {
+                    int nAxes;
+                    const float * axesState = glfwGetJoystickAxes(j, &nAxes);
+                    int nButtons;
+                    const unsigned char * buttonState = glfwGetJoystickButtons(j, &nButtons);
+
+                    for (int i = 0; i < nButtons; i++) {
+                        if (m_joystickStates[j]->buttonState[i] - buttonState[i] == 1) {// button up
+                            L(normal) << "Button " << i << ": up";
+                            //INPUT::JoystickInput joystickInput;
+                            //INPUT::JoystickInput::InputData inputData& = joystickInput.getInputData();
+                        } else if (m_joystickStates[j]->buttonState[i] - buttonState[i] == -1) {// button down 
+                            L(normal) << "Button " << i << ": down";
+                        }
+                    }
+                    for (int i = 0; i < nAxes; i++) {
+                        
+                    }
+                    L(normal) << m_joystickStates[j]->axesState[0];
+                    memcpy(m_joystickStates[j]->axesState, axesState, nAxes * sizeof (float));
+                    memcpy(m_joystickStates[j]->buttonState, buttonState, nButtons * sizeof (char));
+                }
+
+            }*/
+        }
+
+        void GLFWInputFactory::cursorPositionCallback(GLFWwindow * m_pWindow, double x, double y) {
+           /* INPUT::MouseInput mi;
+            mi.setEventType(INPUT::MouseInput::MOVED);
+            mi.setPosition(x, y);
+            INPUT::InputManager::getInstance().processInput(mi);*/
+        }
+
+        void GLFWInputFactory::mouseButtonCallback(GLFWwindow * m_pWindow, int button, int action, int mods) {
+         /*   INPUT::MouseInput mi;
+            if (action == 0)
+                mi.setEventType(INPUT::MouseInput::BUTTONRELEASED);
+            else if (action == 1)
+                mi.setEventType(INPUT::MouseInput::BUTTONPRESSED);
+            else {
+                L_SENDER(error, "Application") << "Unknown event type";
+                return;
+            }
+            mi.setPosition(0, 0);
+            INPUT::InputManager::getInstance().processInput(mi);*/
+        }
+    }
+}

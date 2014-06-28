@@ -1,0 +1,151 @@
+/* 
+ * File:   ButtonView.cpp
+ * Author: chris
+ * 
+ * Created on May 23, 2014, 9:11 PM
+ */
+
+#include "ButtonView.h"
+#include "../../../GL/GLShaderManager.h"
+#include "../../Context.h"
+#include "../../../GL/GLShaderProgram.h"
+#include "../../../GL/Renderer.h"
+#include "../../COMPONENTS/Button.h"
+#include "../../../GL/FONTS/GLFontManager.h"
+#include "../../../GL/FONTS/GLFont.h"
+
+#include <iostream>
+#include <cstdlib>
+#include <cmath>
+
+#define NAME "ButtonView"
+
+namespace UI {
+    namespace THEME {
+        namespace DEFAULT {
+
+            ButtonView::ButtonView()
+            : ComponentView()
+            , m_backgroundRenderable(0)
+            , m_backgroundColor(0)
+            , m_fontHandle(0)
+            , m_captionRenderable(0)
+            , m_captionColor(0)
+            , m_texture(0) {
+                m_captionDimensions.x = 0;
+                m_captionDimensions.y = 0;
+            }
+
+            ButtonView::~ButtonView() {
+                if (m_captionRenderable)
+                    delete m_captionRenderable;
+                if (m_captionColor)
+                    delete m_captionColor;
+                if (m_fontHandle)
+                    delete m_fontHandle;
+                if (m_texture)
+                    delete m_texture;
+                if (m_backgroundRenderable)
+                    delete m_backgroundRenderable;
+                if (m_backgroundColor)
+                    delete m_backgroundColor;
+            }
+
+            void ButtonView::update(Component& cmp) {
+                if (m_backgroundRenderable && m_backgroundRenderable->getRenderBuffer()) {
+                    GL::GLVertexBuffer* vb = static_cast<GL::GLVertexBuffer*> (m_backgroundRenderable->getRenderBuffer());
+                    MATH::vec2 vertex;
+                    int x = cmp.getWidth();
+                    int y = cmp.getHeight();
+                    vertex.x = x;
+                    vertex.y = y;
+                    vb->update_vertex(&vertex, 1);
+                    vertex.x = 0;
+                    vertex.y = y;
+                    vb->update_vertex(&vertex, 2);
+                    vertex.x = x;
+                    vertex.y = 0;
+                    vb->update_vertex(&vertex, 3);
+                }
+            }
+
+            void ButtonView::render(REND::Renderer& renderer, const Component& component) {
+                const COMPONENTS::Button& button = static_cast<const COMPONENTS::Button&> (component);
+                glEnable(GL_BLEND);
+                glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+                const MATH::vec4& bc = button.getBackgroundColor();
+
+                m_backgroundRenderable->activateProgram(renderer);
+                m_backgroundColor->set(bc.data);
+                m_backgroundRenderable->draw(renderer);
+
+                if (m_captionRenderable) {
+                    int h = component.getHeight();
+                    int w = component.getWidth();
+
+                    int shiftX = round(((float) w - m_captionDimensions.x) / 2.f);
+                    int shiftY = round(((float) h - m_captionDimensions.y * 1.5f) / 2.f);
+
+                    renderer.PushMatrix();
+                    renderer.Translate(shiftX, shiftY, 0);
+
+                    m_captionRenderable->activateProgram(renderer);
+
+                    glEnable(GL_BLEND);
+                    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+                    glActiveTexture(GL_TEXTURE0);
+                    glBindTexture(GL_TEXTURE_2D, static_cast<GL::FONTS::GLFont*> (m_fontHandle->operator *())->getTexture());
+
+                    m_captionColor->set(button.getCaptionColor().data);
+                    int t0 = 0;
+                    m_texture->set(&t0);
+
+                    m_captionRenderable->draw(renderer);
+                    renderer.PopMatrix();
+                }
+            }
+
+            ComponentView* ButtonView::create(Component& cmp, Context& ctx) {
+                COMPONENTS::Button& button = static_cast<COMPONENTS::Button&> (cmp);
+                ButtonView* buttonView = new ButtonView;
+                GL::GLShaderManager& shaderManager = static_cast<GL::GLShaderManager&> (ctx.getShaderManager());
+
+                GL::GLVertexBuffer* backgroundBuffer = new GL::GLVertexBuffer("vertex:2f");
+                GLuint indices[6] = {0, 1, 2, 0, 3, 1};
+                MATH::vec2 vertices[4] = {
+                    {0, 0},
+                    {button.getWidth(), button.getHeight()},
+                    {0, button.getHeight()},
+                    {button.getWidth(), 0}
+                };
+                backgroundBuffer->push_back(vertices, 4, indices, 6);
+                buttonView->m_backgroundRenderable = new REND::Renderable(backgroundBuffer, ctx.getShaderManager().getShaderProgramInstance("flat"));
+                buttonView->m_backgroundColor = buttonView->m_backgroundRenderable->getShaderInstance().createUniformSetting("color", false);
+
+                if (button.getCaption().size()) {
+                    REND::FONTS::FontManager& fontManager = ctx.getFontManager();
+                    REND::FONTS::FontDescription raleway("Raleway-Thin", 48);
+                    SYS::Handle<REND::FONTS::Font>* fontHandle = fontManager.getFontPointer(raleway);
+                    REND::FONTS::Font* font = fontHandle->operator *();
+                    buttonView->m_fontHandle = fontHandle;
+                    MATH::vec2 pen;
+                    pen.x = 0;
+                    pen.y = font->getAscender();
+                    if (buttonView->m_fontHandle) {
+                        buttonView->m_captionRenderable = new REND::Renderable(static_cast<GL::FONTS::GLFontManager&> (fontManager).createText(button.getCaption(), *buttonView->m_fontHandle, &pen), ctx.getShaderManager().getShaderProgramInstance("TextShader"));
+                        buttonView->m_captionColor = buttonView->m_captionRenderable->getShaderInstance().createUniformSetting("color", false);
+                        buttonView->m_texture = buttonView->m_captionRenderable->getShaderInstance().createUniformSetting("fonttexture", false);
+
+                        L(normal) << "captionText size: " << pen.x << " x " << pen.y;
+                        button.setMinimumSize(pen.x, pen.y);
+                        buttonView->m_captionDimensions.x = pen.x;
+                        buttonView->m_captionDimensions.y = pen.y;
+                    }
+
+                }
+
+                return buttonView;
+            }
+        }
+    }
+}

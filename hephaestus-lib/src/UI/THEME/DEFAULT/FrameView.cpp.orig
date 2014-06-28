@@ -1,0 +1,35 @@
+/* 
+ * File:   FrameView.cpp
+ * Author: chris
+ * 
+ * Created on May 23, 2014, 9:34 PM
+ */
+
+#include "FrameView.h"
+#include "../../View.h"
+
+#include <iostream>
+
+namespace UI {
+    namespace THEME {
+        namespace DEFAULT {
+
+            FrameView::FrameView() : ComponentView() {
+            }
+
+            FrameView::~FrameView() {
+            }
+            
+            void FrameView::update(Component& cmp) {
+                View& view = static_cast<View&>(cmp);
+                view.setContainerDimensions(view.getDimensions());
+            }
+
+            ComponentView* FrameView::create(Component& cmp, Context& ctx) {
+                View& view = static_cast<View&>(cmp);
+                view.setContainerDimensions(view.getDimensions());
+                return new FrameView;
+            }
+        }
+    }
+}

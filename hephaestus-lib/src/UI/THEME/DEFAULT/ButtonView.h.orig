@@ -1,0 +1,50 @@
+/* 
+ * File:   ButtonView.h
+ * Author: chris
+ *
+ * Created on May 23, 2014, 9:11 PM
+ */
+
+#ifndef BUTTONVIEW_H
+#define	BUTTONVIEW_H
+
+#include "../../ComponentView.h"
+#include "../../../MATH/vec234.h"
+#include "../../../GL/GLVertexBuffer.h"
+
+#include "../../../SYS/Handle.h"
+#include "../../../REND/FONTS/Font.h"
+#include "../../../REND/ShaderProgramInstance.h"
+#include "../../../REND/Renderable.h"
+
+namespace UI {
+    class Component;
+    class Context;
+    namespace THEME {
+        namespace DEFAULT {
+
+            class ButtonView : public ComponentView {
+            public:
+                ButtonView();
+                virtual ~ButtonView();
+                virtual void update(Component& cmp);
+
+                // ComponentView
+                virtual void render(REND::Renderer& renderer, const Component& component);
+
+                static ComponentView* create(Component& cmp, Context& ctx);
+            private:
+                REND::Renderable* m_backgroundRenderable;
+                REND::UniformSetting* m_backgroundColor;
+
+                SYS::Handle<REND::FONTS::Font>* m_fontHandle;
+                REND::Renderable* m_captionRenderable;
+                REND::UniformSetting* m_captionColor;
+                REND::UniformSetting* m_texture;
+                MATH::vec2 m_captionDimensions;
+            };
+        }
+    }
+}
+#endif	/* BUTTONVIEW_H */
+

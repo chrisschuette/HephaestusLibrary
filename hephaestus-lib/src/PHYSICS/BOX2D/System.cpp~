@@ -1,0 +1,91 @@
+/* 
+ * File:   System.cpp
+ * Author: chris
+ * 
+ * Created on May 21, 2014, 7:23 PM
+ */
+
+#include "System.h"
+#include "Body.h"
+#include "BodyDescription.h"
+#include "../../LOG/Core.h"
+
+#include <Box2D/Dynamics/b2Body.h>
+#include <Box2D/Collision/Shapes/b2PolygonShape.h>
+#include <Box2D/Dynamics/Contacts/b2Contact.h>
+#include "../Collision.h"
+#include "../CollisionListener.h"
+#include "../BodyUserData.h"
+
+// debug
+#include "../../../examples/LilAstro/SensorInformation.h"
+
+#define NAME "System"
+
+namespace PHYSICS {
+    namespace BOX2D {
+
+        System::System(float scalingFactor)
+        : PHYSICS::System(scalingFactor)
+        , m_world(b2Vec2(0.0f, -10.0f))
+        , m_timeStep(1.0f / 120.0f)
+        , m_velocityIterations(6)
+        , m_positionIterations(2)
+        , stepsPerUpdate(2) {
+            m_world.SetContactListener(this);
+        }
+
+        System::~System() {
+        }
+
+        void System::update() {
+            for (int s = 0; s < stepsPerUpdate; s++)
+                m_world.Step(m_timeStep, m_velocityIterations, m_positionIterations);
+            m_world.ClearForces();
+
+            PHYSICS::System::update();
+        }
+
+        PHYSICS::Body* System::createBody(const PHYSICS::BodyDescription& description) {
+            const PHYSICS::BOX2D::BodyDescription& desc = static_cast<const PHYSICS::BOX2D::BodyDescription&> (description);
+            b2Body* body = m_world.CreateBody(desc.getBox2DDefinition());
+            return new Body(body, *this);
+        }
+
+        void System::destroyBody(PHYSICS::Body* body) {
+            BOX2D::Body* box2dbody = static_cast<BOX2D::Body*> (body);
+            m_world.DestroyBody(box2dbody->getBox2DBody());
+        }
+
+        void System::setGravityVector(const MATH::vec2& g) {
+            m_world.SetGravity((const b2Vec2&) g);
+        }
+
+        void System::BeginContact(b2Contact* contact) {
+            if (m_collisionListener) {
+                // handle collision
+                // a) find the bodies
+                PHYSICS::Body* A = static_cast<PHYSICS::Body*> (contact->GetFixtureA()->GetBody()->GetUserData());
+                PHYSICS::Body* B = static_cast<PHYSICS::Body*> (contact->GetFixtureB()->GetBody()->GetUserData());
+
+                if (A && B)
+                    m_collisionListener->queueCollision(new PHYSICS::Collision(PHYSICS::Collision::BEGIN, *A, static_cast<BodyPartUserData*> (contact->GetFixtureA()->GetUserData()), *B, static_cast<BodyPartUserData*> (contact->GetFixtureA()->GetUserData())));
+            }
+        }
+
+        void System::EndContact(b2Contact* contact) {
+            if (m_collisionListener) {
+                // handle collision
+                // a) find the bodies
+                PHYSICS::Body* A = static_cast<PHYSICS::Body*> (contact->GetFixtureA()->GetBody()->GetUserData());
+                PHYSICS::Body* B = static_cast<PHYSICS::Body*> (contact->GetFixtureB()->GetBody()->GetUserData());
+
+                if (A && B)
+                    m_collisionListener->queueCollision(new PHYSICS::Collision(PHYSICS::Collision::END, *A, static_cast<BodyPartUserData*> (contact->GetFixtureA()->GetUserData()), *B, static_cast<BodyPartUserData*> (contact->GetFixtureA()->GetUserData())));
+            }
+        }
+
+
+
+    }
+}
