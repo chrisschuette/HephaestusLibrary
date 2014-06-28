@@ -8,10 +8,12 @@ Examples.
 
 ### SuperAsteroids ###
 <img src="http://chrisschuette.github.io/HephaestusLibrary/SuperAsteroid.png"></img>
+
 Some gameplay footage can be seen [here](https://vimeo.com/98917928)
 
 ### Night & Day ###
 <img src="http://chrisschuette.github.io/HephaestusLibrary/NightAndDay.png"></img>
+
 Some gameplay footage can be seen [here](https://vimeo.com/98908413)
 
 Dependencies.
