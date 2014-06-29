@@ -1,6 +1,9 @@
 Hephaestus Library
 ==================
 
+Design Fundamentals.
+--------------------
+<img src="http://chrisschuette.github.io/HephaestusLibrary/ResourceMgmt.png"></img>
 
 
 Examples.
